@@ -28,6 +28,9 @@ All components are **local and disposable**, so you can safely experiment and te
 
 ## 🚀 Quick start
 
+> **Prerequisite:**
+> Ensure **Docker Desktop** is installed and running before proceeding — the Makefile uses Docker to spin up test containers.
+
 | **Step**                                     | **Command(s)** | **Description**                                                                                                                                                                                                                                                                                  |
 | -------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 🧩 **1. Install dependencies**               | `make deps`    | Installs the required Python dependencies (Ansible and related tools) using `pip`, and installs any collections listed in `requirements.yml`.                                                                                                                                                    |
