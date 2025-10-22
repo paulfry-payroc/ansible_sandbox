@@ -1,0 +1,12 @@
+# test_playbook.yml
+- name: Test Ansible on local Docker containers
+  hosts: nodes
+  gather_facts: yes
+  tasks:
+    - name: Ping all nodes
+      ansible.builtin.ping:
+
+    - name: Create a test file
+      ansible.builtin.file:
+        path: /tmp/hello_ansible.txt
+        state: touch
