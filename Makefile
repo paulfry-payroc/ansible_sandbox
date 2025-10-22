@@ -23,7 +23,7 @@ include src/make/variables.mk
 all: deps install
 
 deps:
-	@[ ! -f requirements.txt ] || pip install -r requirements.txt
+	@[ ! -f requirements.txt ] || pipx install -r requirements.txt
 
 install:
 	@echo "${INFO}\nCalled makefile target 'install'. Completed sandbox setup.\n${COLOUR_OFF}"
