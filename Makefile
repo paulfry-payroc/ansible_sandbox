@@ -24,7 +24,6 @@ all: deps install
 
 deps:
 	@[ ! -f requirements.txt ] || pip install -r requirements.txt
-	@[ ! -f requirements.yml ] || ansible-galaxy install -r requirements.yml
 
 install:
 	@echo "${INFO}\nCalled makefile target 'install'. Completed sandbox setup.\n${COLOUR_OFF}"
