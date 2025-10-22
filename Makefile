@@ -23,8 +23,7 @@ include src/make/variables.mk
 all: deps install
 
 deps:
-	@[ ! -f requirements.txt ] || pip install -r requirements.txt
-	@[ ! -f requirements.yml ] || ansible-galaxy install -r requirements.yml
+	@pipx install ansible==8.7.0
 
 install:
 	@echo "${INFO}\nCalled makefile target 'install'. Completed sandbox setup.\n${COLOUR_OFF}"
