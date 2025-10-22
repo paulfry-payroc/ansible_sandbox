@@ -23,7 +23,7 @@ include src/make/variables.mk
 all: deps install
 
 deps:
-	@[ ! -f requirements.txt ] || pipx install -r requirements.txt
+	@pipx install ansible==8.7.0
 
 install:
 	@echo "${INFO}\nCalled makefile target 'install'. Completed sandbox setup.\n${COLOUR_OFF}"
