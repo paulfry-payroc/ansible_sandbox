@@ -1,131 +1,74 @@
 # 🧪 Ansible Sandbox
 
-A lightweight **starter project** for learning and experimenting with **Ansible** locally — using Docker containers as disposable managed nodes.
-
-This repo demonstrates a **clean baseline Ansible project structure** (with separate folders for playbooks, inventories, and roles), making it easy to evolve into a real-world automation repo later.
-
----
-
-## ⚙️ What this sandbox sets up
-
-When you complete the setup steps below, you’ll have:
-
-* **Two local Docker containers (`node1`, `node2`)**
-  → These act as simulated Ansible-managed hosts, letting you practise running playbooks against multiple systems.
-
-* **An Ansible inventory (`inventories/dev/inventory.ini`)**
-  → Defines the local containers as hosts in a “dev” environment group.
-
-* **A sample playbook (`playbooks/site.yml`)**
-  → A simple YAML file with example tasks (e.g., pinging hosts, creating files) so you can verify Ansible is working correctly.
-
-* **A baseline folder structure (`playbooks/`, `roles/`, `inventories/`)**
-  → Mirrors the layout used in production Ansible projects — helping you transition from sandbox to real deployments later.
-
-All components are **local and disposable**, so you can safely experiment and tear them down with `make clean`.
+A small, role-based **local Ansible environment** using Docker.
+Built for quick testing and safe experimentation — with almost nothing to remember.
 
 ---
 
-## 🚀 Quick start
+# ⚡ TL;DR — The only commands you need
 
-> **Prerequisite:**
-> Ensure **Docker Desktop** is installed and running before proceeding — the Makefile uses Docker to spin up test containers.
+```bash
+make deps
+```
 
-| **Step**                                     | **Command(s)** | **Description**                                                                                                                                                                                                                                                                                  |
-| -------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 🧩 **1. Install dependencies**               | `make deps`    | Installs the required Python dependencies (Ansible and related tools) using `pip`, and installs any collections listed in `requirements.yml`.                                                                                                                                                    |
-| 🐳 **2. Create and prepare test containers** | `make install` | Creates two Ubuntu-based Docker containers (`node1`, `node2`) that act as managed hosts, installs Python inside each (required by Ansible modules), and ensures your inventory and playbook are in place.                                                                                        |
-| ▶️ **3. Run the playbook**                   | `make run`     | Executes `playbooks/site.yml` against both containers listed in `inventories/dev/inventory.ini`. <br><br>To verify success, check for the created file on each node:<br>`docker exec -it node1 ls /tmp`<br>`docker exec -it node2 ls /tmp`<br>You should see `hello_ansible.txt` listed on both. |
+➡️ Installs Ansible (one-time).
 
----
+```bash
+make install
+```
 
-✅ *After completing these steps, you’ll have a working local Ansible setup using Docker containers as managed hosts.*
+➡️ Creates Docker node **node1**, exposes nginx on **[http://localhost](http://localhost)**, prepares it for Ansible.
 
----
+```bash
+make run
+```
 
-## 🧹 Clean-up
+➡️ Applies the `webserver` role, installing nginx and serving a test page.
 
-When you’re done, remove the containers to restore your environment:
+Then visit:
+
+**[http://localhost](http://localhost)**
+
+You should see:
+
+```
+Hello from the Ansible sandbox webserver role!
+```
 
 ```bash
 make clean
 ```
 
-This stops and removes both containers (`node1`, `node2`).
+➡️ Removes the sandbox container.
+
+---
+
+## 🚀 Quick overview (no commands repeated)
+
+* The sandbox uses **one Docker container** (`node1`).
+* The inventory defines a `nodes` group for easy extension.
+* The main playbook (`playbooks/site.yml`) applies roles.
+* The example role (`roles/webserver`) installs nginx.
+* Port **80** inside the container is exposed directly to your host.
+
+That’s it — minimal, predictable, and easy to pick back up later.
 
 ---
 
 ## 🗂️ Project structure
 
-Here’s the baseline repo layout used by this sandbox:
-
 ```
-.
-├── ansible.cfg
-├── inventories/
-│   └── dev/
-│       ├── inventory.ini
-│       ├── group_vars/
-│       └── host_vars/
-├── playbooks/
-│   └── site.yml
-├── roles/
-│   └── README.md
-├── requirements.yml
-├── Makefile
-├── README.md
-└── src/
-    ├── make/variables.mk
-    └── sh/
-        ├── create_docker_containers.sh
-        ├── destroy_docker_containers.sh
-        └── shell_utils.sh
+inventories/dev/inventory.ini   # defines node1
+playbooks/site.yml              # applies roles
+roles/webserver/                # example nginx role
+src/sh/*.sh                     # container create/destroy helpers
+Makefile                        # top-level automation
 ```
-
-This mirrors the **standard structure** used for scalable Ansible repositories — where:
-
-| Folder           | Purpose                                                                 |
-| ---------------- | ----------------------------------------------------------------------- |
-| **inventories/** | Environment-specific inventories (e.g. `dev`, `prod`) and variables.    |
-| **playbooks/**   | YAML playbooks that define automation workflows.                        |
-| **roles/**       | Modular, reusable roles (e.g. `docker_runtime`, `airflow_single_node`). |
-| **src/**         | Helper shell scripts and Make targets for local automation.             |
 
 ---
 
-## 📘 Key Ansible Concepts
+## 📝 How it works (30 seconds)
 
-| Term          | Description                                                                      |
-| ------------- | -------------------------------------------------------------------------------- |
-| **Inventory** | Lists the hosts or groups of hosts that Ansible manages.                         |
-| **Playbook**  | A YAML file describing one or more “plays” (task sets) run on defined hosts.     |
-| **Role**      | A structured collection of tasks, files, templates, and vars designed for reuse. |
-| **Module**    | A discrete unit of work (e.g. `ping`, `file`, `copy`, `yum`).                    |
-| **Task**      | A single module invocation within a playbook.                                    |
-| **Node**      | A target system that Ansible connects to and manages (your Docker containers).   |
-
----
-
-## 🌱 Next steps / ideas for expansion
-
-This sandbox provides a practical foundation for learning and iterating with Ansible.
-Once you’re comfortable with the basics, consider expanding in the following directions:
-
-1. **Add Variables & Templates**
-   Use `vars:` blocks or external files to parameterise tasks and render dynamic content with Jinja2 templates.
-
-2. **Introduce Roles**
-   Move repeated logic into reusable, modular roles (e.g. `docker_runtime`, `airflow_single_node`).
-   → See [docs/ansible_roles_example.md](docs/ansible_roles_example.md)
-
-3. **Add Molecule tests**
-   Use [Molecule](https://molecule.readthedocs.io/) to lint and test your roles automatically.
-
-4. **Use Ansible Vault**
-   Securely store credentials or secrets using `ansible-vault encrypt`.
-
-5. **Integrate CI/CD**
-   Add a lightweight pipeline (e.g. GitHub Actions or Azure DevOps) to run `ansible-lint` and playbook syntax checks on commit.
-
-6. **Target remote hosts**
-   Replace the local Docker setup with real VMs or EC2 instances (SSH-based connections) to practise managing actual infrastructure.
+* `make install` → spins up an Ubuntu container with port 80 published
+* `make run` → runs Ansible, which installs & configures nginx via the `webserver` role
+* You hit `http://localhost` → the page is served from inside `node1`

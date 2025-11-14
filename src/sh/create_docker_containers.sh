@@ -1,23 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-IMAGE_TAG="ansible-node:22.04"
+echo "[INFO] Creating Ansible sandbox Docker node (node1)..."
 
-echo "🔧 Ensuring image ${IMAGE_TAG} exists..."
-if ! docker image inspect "${IMAGE_TAG}" >/dev/null 2>&1; then
-  docker build -t "${IMAGE_TAG}" -f docker/Dockerfile docker
-  echo "✅ Built ${IMAGE_TAG}"
-else
-  echo "ℹ️  Found existing ${IMAGE_TAG}"
-fi
+# Remove any existing container
+docker rm -f node1 2>/dev/null || true
 
-echo "🚀 Creating Docker containers (node1, node2) from ${IMAGE_TAG}"
-for node in node1 node2; do
-  if [ -z "$(docker ps -aq -f name="$node")" ]; then
-    docker run -d --name "$node" --hostname "$node" "${IMAGE_TAG}"
-    echo "✅ Created $node"
-  else
-    echo "ℹ️  $node already exists; ensuring it's running"
-    docker start "$node" >/dev/null 2>&1 || true
-  fi
-done
+# Create node1, exposed on host port 80 -> container port 80
+docker run -d \
+  --name node1 \
+  -p 80:80 \
+  ubuntu:22.04 \
+  sleep infinity
+
+echo "[INFO] Installing Python and basic tools inside node1..."
+docker exec -it node1 bash -c '
+  apt-get update -y &&
+  apt-get install -y python3 python3-apt curl
+'
+
+echo "[INFO] node1 is ready for Ansible."
