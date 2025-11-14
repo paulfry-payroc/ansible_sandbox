@@ -1,0 +1,17 @@
+---
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Ensure nginx is running and enabled
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Create a simple index.html
+  ansible.builtin.copy:
+    dest: /var/www/html/index.html
+    content: "Hello from the Ansible sandbox webserver role!\n"
